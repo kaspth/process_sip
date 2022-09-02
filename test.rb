@@ -1,3 +1,5 @@
+require "shellwords"
+
 module ProcessSip
   module ExtenSip
     refine Symbol do
@@ -73,7 +75,7 @@ module ProcessSip
 
     def initialize(command, *keys, **options)
       @command, @options = command, keys.index_with(nil).merge(options)
-      @arguments = @options.map { [ "--#{_1.tr("_", "-")}", _2 ].compact.join("=") }
+      @arguments = @options.map { [ "--#{_1.dasherize}", _2&.shellescape ].compact.join("=") }
     end
 
     def without(*keys)
@@ -81,3 +83,10 @@ module ProcessSip
     end
   end
 end
+
+@git = ProcessSip.git
+def @git.commit_all(message)
+  add "." and commit :m, message
+end
+
+@git_dir = @git.with(git_dir: __dir__)
