@@ -23,12 +23,12 @@ module ProcessSip
   using ExtenSip
 
   def self.method_missing(command)
-    Command.new(command)
+    Executable.new(command)
   end
 
-  class Command
+  class Executable
     def initialize(name)
-      @name = name.to_s
+      @name = name.dasherize
       @context = Context.new self
     end
 
@@ -41,9 +41,13 @@ module ProcessSip
     end
 
     def exec(command, *arguments, **options, &block)
-      processed = [ @name, *@context.arguments, command.to_s, *process_arguments(arguments), *process_options(options) ]
-      p processed.join(" ")
-      system *processed
+      if arguments.empty? && options.empty?
+        Command.new(self, command)
+      else
+        processed = [ @name, *@context.arguments, command.to_s, *process_arguments(arguments), *process_options(options) ]
+        p processed.join(" ")
+        system *processed
+      end
     end
     alias method_missing exec
 
@@ -66,11 +70,31 @@ module ProcessSip
       end
   end
 
+  class Command
+    def initialize(executable, name)
+      @executable, @name = executable, name.dasherize
+    end
+
+    def with(...)
+      clone.tap { _1.executable = executable.with(...) }
+    end
+
+    def without(...)
+      clone.tap { _1.executable = executable.without(...) }
+    end
+
+    def method_missing(name, ...)
+      executable.exec(@name, name.to_s, ...)
+    end
+
+    protected attr_accessor :executable
+  end
+
   class Context
     attr_reader :arguments
 
-    def initialize(command, *keys, **options)
-      @command, @options = command, keys.index_with(nil).merge(options)
+    def initialize(executable, *keys, **options)
+      @executable, @options = executable, keys.index_with(nil).merge(options)
       @arguments = @options.map { [ "--#{_1.dasherize}", _2&.shellescape ].compact.join("=") }
     end
 
