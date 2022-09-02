@@ -41,13 +41,9 @@ module ProcessSip
     end
 
     def exec(command, *arguments, **options, &block)
-      if block_given?
-        yield self # spawn a process here?
-      else
-        command = [ @name, *@context.arguments, command.to_s, *process_arguments(arguments), *process_options(options) ]
-        p command
-        system *command
-      end
+      processed = [ @name, *@context.arguments, command.to_s, *process_arguments(arguments), *process_options(options) ]
+      p processed.join(" ")
+      system *processed
     end
     alias method_missing exec
 
