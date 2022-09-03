@@ -10,8 +10,12 @@ module ProcessSip
   @executables = {}
 
   def self.method_missing(executable)
-    require_relative "lib/process_sip/executables/#{executable}" unless klass = @executables[executable]
-    (klass || Executable).new(executable)
+    unless @executables.key?(executable)
+      require_relative "lib/process_sip/executables/#{executable}"
+    rescue LoadError
+    end
+
+    (@executables[executable] ||= Executable).new(executable)
   end
 
   def self.extension_for(executable, &block)
