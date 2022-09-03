@@ -26,7 +26,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/process_sip.
+Bug reports and pull requests are welcome on GitHub at https://github.com/kaspth/process_sip.
 
 ## License
 
