@@ -61,7 +61,7 @@ module ProcessSip
       end
 
       def process_options(options)
-        options.map { "-#{_1.dasherize}=#{_2}" }
+        options.flat_map { [ "-#{_1.dasherize}", _2 ] }
       end
   end
 
