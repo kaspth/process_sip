@@ -11,8 +11,10 @@ module ProcessSip
 
   def self.method_missing(executable)
     unless @executables.key?(executable)
-      require_relative "lib/process_sip/executables/#{executable}"
-    rescue LoadError
+      begin
+        require "lib/process_sip/executables/#{executable}"
+      rescue LoadError
+      end
     end
 
     (@executables[executable] ||= Executable).new(executable)
