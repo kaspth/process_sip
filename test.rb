@@ -44,9 +44,7 @@ module ProcessSip
       if arguments.empty? && options.empty?
         Command.new(self, command)
       else
-        processed = [ @name, *@context.arguments, command.to_s, *process_arguments(arguments), *process_options(options) ]
-        p processed.join(" ")
-        system *processed
+        system @name, *@context.arguments, command.to_s, *process_arguments(arguments), *process_options(options)
       end
     end
     alias method_missing exec
