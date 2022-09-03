@@ -44,13 +44,16 @@ module ProcessSip
     end
 
     def exec(command, *arguments, **options, &block)
+      system @name, *@context.arguments, command.to_s, *process_arguments(arguments), *process_options(options)
+    end
+
+    def method_missing(command, *arguments, **options)
       if arguments.empty? && options.empty?
         Command.new(self, command)
       else
-        system @name, *@context.arguments, command.to_s, *process_arguments(arguments), *process_options(options)
+        exec(command, *arguments, **options)
       end
     end
-    alias method_missing exec
 
     private
       protected attr_accessor :context
@@ -81,8 +84,12 @@ module ProcessSip
       clone.tap { _1.executable = executable.without(...) }
     end
 
+    def exec(...)
+      executable.exec(@name, ...)
+    end
+
     def method_missing(name, ...)
-      executable.exec(@name, name.to_s, ...)
+      exec(name.to_s, ...)
     end
 
     protected attr_accessor :executable
