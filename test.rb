@@ -53,10 +53,7 @@ module ProcessSip
       protected attr_accessor :context
 
       def new_with_context(*keys, **options)
-        clone.tap do
-          _1.context = Context.new(_1, *keys, **options)
-          yield self if block_given?
-        end
+        clone.tap { _1.context = Context.new(_1, *keys, **options) }
       end
 
       def process_arguments(arguments)
