@@ -1,29 +1,11 @@
 # frozen_string_literal: true
 
-require_relative "process_sip/version"
 require "shellwords"
+require_relative "process_sip/version"
 
 module ProcessSip
-  module ExtenSip
-    refine Symbol do
-      def dasherize
-        name.dasherize
-      end
-    end
-
-    refine String do
-      def dasherize
-        tr("_", "-")
-      end
-    end
-
-    refine Enumerable do
-      def index_with(default)
-        to_h { [ _1, default ] }
-      end
-    end
-  end
-  using ExtenSip
+  require_relative "process_sip/extensions"
+  using Extensions
 
   def self.method_missing(command)
     Executable.new(command)
