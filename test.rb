@@ -2,8 +2,11 @@ require_relative "lib/process_sip"
 
 git = ProcessSip.git
 define_method(:git) { git }
+
+def git.commit(message) = super(:m, message)
+
 def git.commit_all(message)
-  add "." and commit :m, message
+  add "." and commit message
 end
 
 git_dir = git.with(git_dir: __dir__)
