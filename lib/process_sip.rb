@@ -7,8 +7,15 @@ module ProcessSip
   require_relative "process_sip/extensions"
   using Extensions
 
-  def self.method_missing(command)
-    Executable.new(command)
+  @executables = {}
+
+  def self.method_missing(executable)
+    require_relative "lib/process_sip/executables/#{executable}" unless klass = @executables[executable]
+    (klass || Executable).new(executable)
+  end
+
+  def self.extension_for(executable, &block)
+    @executables[executable] ||= Class.new(Executable).tap { _1.class_eval(&block) }
   end
 
   class Executable
