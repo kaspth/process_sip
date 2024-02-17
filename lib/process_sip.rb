@@ -7,14 +7,16 @@ module ProcessSip
   require_relative "process_sip/refinements"
   using Refinements
 
+  # ProcessSip.load_each :git, :curl
+  def self.load_each(*names)
+    names.each do
+      require "lib/process_sip/adapters/#{_1}"
+    end
+  end
+
   @adapters = {}
 
   def self.method_missing(name)
-    @adapters.key?(name) or begin
-      require "lib/process_sip/adapters/#{name}"
-    rescue LoadError
-    end
-
     (@adapters[name] ||= Adapter).new(name)
   end
 
