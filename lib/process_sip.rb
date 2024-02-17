@@ -28,8 +28,8 @@ module ProcessSip
       @name, @context = name.dasherize, Context.new
     end
 
-    def without(*, &) = with(**@context.without(*), &)
-    def with(...)     = clone.tap { _1.instance_variable_set :@context, Context.new(...) }
+    def omit(*, &) = with(**@context.omit(*), &)
+    def with(...)  = clone.tap { _1.instance_variable_set :@context, Context.new(...) }
 
     def call(name, *arguments, **options, &block)
       resolved = [@name, *@context.arguments, name.to_s, *process_arguments(arguments), *process_options(options)]
@@ -67,6 +67,6 @@ module ProcessSip
     end
     attr_reader :arguments
 
-    def without(...) = @options.except(...)
+    def omit(...) = @options.except(...)
   end
 end
