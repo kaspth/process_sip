@@ -38,7 +38,7 @@ module ProcessSip
     end
 
     ruby2_keywords def method_missing(name, *arguments)
-      arguments.empty? ? Subcommand.new(self, name) : call(name, *arguments)
+      arguments.empty? ? Subcommand.new(self, name.dasherize) : call(name, *arguments)
     end
 
     private
@@ -51,13 +51,9 @@ module ProcessSip
       end
   end
 
-  class Subcommand
-    def initialize(adapter, name)
-      @adapter, @name = adapter, name.dasherize
-    end
-
+  class Subcommand < Data.define(:adapter, :name)
     def method_missing(...) = call(...)
-    def call(...) = @adapter.call(@name, ...)
+    def call(...) = adapter.call(name, ...)
   end
 
   class Context
