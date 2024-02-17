@@ -32,16 +32,12 @@ module ProcessSip
     def without(*, &) = with(**@context.without(*), &)
     def with(...)     = clone.tap { _1.instance_variable_set :@context, Context.new(_1, ...) }
 
-    def call(command, *arguments, **options, &block)
-      system @name, *@context.arguments, command.to_s, *process_arguments(arguments), *process_options(options)
+    def call(name, *arguments, **options, &block)
+      system @name, *@context.arguments, name.to_s, *process_arguments(arguments), *process_options(options)
     end
 
-    ruby2_keywords def method_missing(command, *arguments)
-      if arguments.empty?
-        Command.new(self, command)
-      else
-        call(command, *arguments)
-      end
+    ruby2_keywords def method_missing(name, *arguments)
+      arguments.empty? ? Subcommand.new(self, name) : call(name, *arguments)
     end
 
     private
@@ -54,7 +50,7 @@ module ProcessSip
       end
   end
 
-  class Command
+  class Subcommand
     def initialize(adapter, name)
       @adapter, @name = adapter, name.dasherize
     end
