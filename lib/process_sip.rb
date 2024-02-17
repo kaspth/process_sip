@@ -58,7 +58,9 @@ module ProcessSip
   end
 
   class Command
-    def initialize(executable, name) = @executable, @name = executable, name.dasherize
+    def initialize(executable, name)
+      @executable, @name = executable, name.dasherize
+    end
 
     def with(...)    = clone.tap { _1.executable = executable.with(...) }
     def without(...) = clone.tap { _1.executable = executable.without(...) }
