@@ -57,9 +57,9 @@ module ProcessSip
   end
 
   class Context
-    def initialize(*keys, **options)
-      @options = keys.index_with(nil).merge(options)
-      @arguments = @options.map { [ "--#{_1.dasherize}", _2&.shellescape ].compact.join("=") }
+    def initialize(**options)
+      @options = options
+      @arguments = @options.map { ["--#{_1.dasherize}", _2.shellescape].join("=") }
     end
     attr_reader :arguments
 
