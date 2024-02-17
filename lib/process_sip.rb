@@ -46,9 +46,7 @@ module ProcessSip
     private
       protected attr_accessor :context
 
-      def new_with_context(*keys, **options)
-        clone.tap { _1.context = Context.new(_1, *keys, **options) }
-      end
+      def new_with_context(...) = clone.tap { _1.context = Context.new(_1, ...) }
 
       def process_arguments(arguments)
         arguments.map { _1.is_a?(Symbol) ? "-#{_1}" : _1 }.map(&:dasherize)
@@ -60,25 +58,14 @@ module ProcessSip
   end
 
   class Command
-    def initialize(executable, name)
-      @executable, @name = executable, name.dasherize
-    end
+    def initialize(executable, name) = @executable, @name = executable, name.dasherize
 
-    def with(...)
-      clone.tap { _1.executable = executable.with(...) }
-    end
+    def with(...)    = clone.tap { _1.executable = executable.with(...) }
+    def without(...) = clone.tap { _1.executable = executable.without(...) }
 
-    def without(...)
-      clone.tap { _1.executable = executable.without(...) }
-    end
+    def exec(...) = executable.exec(@name, ...)
 
-    def exec(...)
-      executable.exec(@name, ...)
-    end
-
-    def method_missing(name, ...)
-      exec(name.to_s, ...)
-    end
+    def method_missing(name, ...) = exec(name.to_s, ...)
 
     protected attr_accessor :executable
   end
