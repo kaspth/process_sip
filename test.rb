@@ -13,9 +13,8 @@ end
 p git
 
 git = ProcessSip.git do
-  def with_work_tree
-    @with_work_tree ||= with(work_tree: __dir__)
-  end
+  def with_work_tree = with(work_tree: __dir__)
+  def with_git_dir   = with(git_dir: __dir__ + "/.git")
 end
 p git
 
@@ -24,6 +23,9 @@ p git
 define_method(:git) { git }
 
 binding.irb
+
+# git.with_work_tree.with(git_dir: __dir__ + "/.git").omit(:git_dir, :work_tree)
+# git.with_work_tree.with_git_dir.omit(:git_dir, :work_tree)
 
 # def git.commit(message) = super(:m, message)
 #
