@@ -7,7 +7,9 @@ class TestProcessSip < Minitest::Test
     refute_nil ::ProcessSip::VERSION
   end
 
-  def test_it_does_something_useful
-    assert false
+  def test_execution
+    assert_output "hey" do
+      ProcessSip.echo.exec "hey"
+    end
   end
 end
