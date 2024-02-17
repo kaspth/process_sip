@@ -28,23 +28,18 @@ module ProcessSip
       @context = Context.new self
     end
 
-    def with(*keys, **options, &block)
-      new_with_context(*keys, **options, &block)
-    end
-
-    def without(*keys, &block)
-      new_with_context(**@context.without(*keys), &block)
-    end
+    def with(...)     = new_with_context(...)
+    def without(*, &) = new_with_context(**@context.without(*), &)
 
     def exec(command, *arguments, **options, &block)
       system @name, *@context.arguments, command.to_s, *process_arguments(arguments), *process_options(options)
     end
 
-    def method_missing(command, *arguments, **options)
-      if arguments.empty? && options.empty?
+    ruby2_keywords def method_missing(command, *arguments)
+      if arguments.empty?
         Command.new(self, command)
       else
-        exec(command, *arguments, **options)
+        exec(command, *arguments)
       end
     end
 
