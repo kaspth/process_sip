@@ -18,8 +18,8 @@ module ProcessSip
     (@executables[executable] ||= Executable).new(executable)
   end
 
-  def self.extension_for(executable, &block)
-    @executables[executable] ||= Class.new(Executable).tap { _1.class_eval(&block) }
+  def self.extension_for(executable, &)
+    @executables[executable] ||= Class.new(Executable, &)
   end
 
   class Executable
