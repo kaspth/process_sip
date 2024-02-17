@@ -30,7 +30,7 @@ module ProcessSip
     end
 
     def without(*, &) = with(**@context.without(*), &)
-    def with(...)     = clone.tap { _1.context = Context.new(_1, ...) }
+    def with(...)     = clone.tap { _1.instance_variable_set :@context, Context.new(_1, ...) }
 
     def call(command, *arguments, **options, &block)
       system @name, *@context.arguments, command.to_s, *process_arguments(arguments), *process_options(options)
@@ -45,8 +45,6 @@ module ProcessSip
     end
 
     private
-      protected attr_accessor :context
-
       def process_arguments(arguments)
         arguments.map { _1.is_a?(Symbol) ? "-#{_1}" : _1 }.map(&:dasherize)
       end
@@ -61,13 +59,11 @@ module ProcessSip
       @adapter, @name = adapter, name.dasherize
     end
 
-    def with(...)    = clone.tap { _1.adapter = adapter.with(...) }
-    def without(...) = clone.tap { _1.adapter = adapter.without(...) }
+    def with(...)    = clone.tap { _1.instance_variable_set :@adapter, @adapter.with(...) }
+    def without(...) = clone.tap { _1.instance_variable_set :@adapter, @adapter.without(...) }
 
     def method_missing(name, ...) = call(name.to_s, ...)
-    def call(...) = adapter.call(@name, ...)
-
-    protected attr_accessor :adapter
+    def call(...) = @adapter.call(@name, ...)
   end
 
   class Context
