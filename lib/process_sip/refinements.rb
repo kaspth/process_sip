@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module ProcessSip::Extensions
+module ProcessSip::Refinements
   refine(String) { def dasherize = tr("_", "-") }
   refine(Symbol) { def dasherize = name.dasherize }
 

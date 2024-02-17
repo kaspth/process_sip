@@ -4,8 +4,8 @@ require "shellwords"
 require_relative "process_sip/version"
 
 module ProcessSip
-  require_relative "process_sip/extensions"
-  using Extensions
+  require_relative "process_sip/refinements"
+  using Refinements
 
   @executables = {}
 
