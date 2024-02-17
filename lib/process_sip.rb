@@ -29,8 +29,8 @@ module ProcessSip
       @context = Context.new self
     end
 
-    def with(...)     = new_with_context(...)
-    def without(*, &) = new_with_context(**@context.without(*), &)
+    def without(*, &) = with(**@context.without(*), &)
+    def with(...)     = clone.tap { _1.context = Context.new(_1, ...) }
 
     def call(command, *arguments, **options, &block)
       system @name, *@context.arguments, command.to_s, *process_arguments(arguments), *process_options(options)
@@ -46,8 +46,6 @@ module ProcessSip
 
     private
       protected attr_accessor :context
-
-      def new_with_context(...) = clone.tap { _1.context = Context.new(_1, ...) }
 
       def process_arguments(arguments)
         arguments.map { _1.is_a?(Symbol) ? "-#{_1}" : _1 }.map(&:dasherize)
