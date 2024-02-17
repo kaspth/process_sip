@@ -6,11 +6,12 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    minitest (5.16.3)
-    rake (13.0.6)
+    minitest (5.22.2)
+    rake (13.1.0)
 
 PLATFORMS
   arm64-darwin-20
+  arm64-darwin-23
 
 DEPENDENCIES
   minitest (~> 5.0)
@@ -18,4 +19,4 @@ DEPENDENCIES
   rake (~> 13.0)
 
 BUNDLED WITH
-   2.3.21
+   2.5.6
