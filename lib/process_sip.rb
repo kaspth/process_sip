@@ -33,7 +33,9 @@ module ProcessSip
     def with(...)     = clone.tap { _1.instance_variable_set :@context, Context.new(_1, ...) }
 
     def call(name, *arguments, **options, &block)
-      system @name, *@context.arguments, name.to_s, *process_arguments(arguments), *process_options(options)
+      resolved = [@name, *@context.arguments, name.to_s, *process_arguments(arguments), *process_options(options)]
+      puts Shellwords.escape(resolved.join(" "))
+      system *resolved
     end
 
     ruby2_keywords def method_missing(name, *arguments)
