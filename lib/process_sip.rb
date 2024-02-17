@@ -7,22 +7,22 @@ module ProcessSip
   require_relative "process_sip/refinements"
   using Refinements
 
-  @executables = {}
+  @adapters = {}
 
-  def self.method_missing(executable)
-    @executables.key?(executable) or begin
-      require "lib/process_sip/executables/#{executable}"
+  def self.method_missing(name)
+    @adapters.key?(name) or begin
+      require "lib/process_sip/adapters/#{name}"
     rescue LoadError
     end
 
-    (@executables[executable] ||= Executable).new(executable)
+    (@adapters[name] ||= Adapter).new(name)
   end
 
-  def self.extension_for(executable, &)
-    @executables[executable] ||= Class.new(Executable, &)
+  def self.adapter(adapter, &)
+    @adapters[adapter] ||= Class.new(Adapter, &)
   end
 
-  class Executable
+  class Adapter
     def initialize(name)
       @name = name.dasherize
       @context = Context.new self
@@ -58,25 +58,25 @@ module ProcessSip
   end
 
   class Command
-    def initialize(executable, name)
-      @executable, @name = executable, name.dasherize
+    def initialize(adapter, name)
+      @adapter, @name = adapter, name.dasherize
     end
 
-    def with(...)    = clone.tap { _1.executable = executable.with(...) }
-    def without(...) = clone.tap { _1.executable = executable.without(...) }
+    def with(...)    = clone.tap { _1.adapter = adapter.with(...) }
+    def without(...) = clone.tap { _1.adapter = adapter.without(...) }
 
-    def exec(...) = executable.exec(@name, ...)
+    def exec(...) = adapter.exec(@name, ...)
 
     def method_missing(name, ...) = exec(name.to_s, ...)
 
-    protected attr_accessor :executable
+    protected attr_accessor :adapter
   end
 
   class Context
     attr_reader :arguments
 
-    def initialize(executable, *keys, **options)
-      @executable, @options = executable, keys.index_with(nil).merge(options)
+    def initialize(adapter, *keys, **options)
+      @adapter, @options = adapter, keys.index_with(nil).merge(options)
       @arguments = @options.map { [ "--#{_1.dasherize}", _2&.shellescape ].compact.join("=") }
     end
 
