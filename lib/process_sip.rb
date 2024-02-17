@@ -55,7 +55,7 @@ module ProcessSip
       @adapter, @name = adapter, name.dasherize
     end
 
-    def method_missing(name, ...) = call(name.to_s, ...)
+    def method_missing(...) = call(...)
     def call(...) = @adapter.call(@name, ...)
   end
 
