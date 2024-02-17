@@ -7,6 +7,9 @@ GEM
   remote: https://rubygems.org/
   specs:
     minitest (5.22.2)
+    minitest-sprint (1.2.2)
+      path_expander (~> 1.1)
+    path_expander (1.1.1)
     rake (13.1.0)
 
 PLATFORMS
@@ -14,7 +17,8 @@ PLATFORMS
   arm64-darwin-23
 
 DEPENDENCIES
-  minitest (~> 5.0)
+  minitest
+  minitest-sprint
   process_sip!
   rake (~> 13.0)
 
