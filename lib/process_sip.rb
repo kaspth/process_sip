@@ -14,14 +14,13 @@ module ProcessSip
     end
   end
 
-  @adapters = {}
-
-  def self.method_missing(name)
-    (@adapters[name] ||= Adapter).new(name)
-  end
-
-  def self.adapter(adapter, &)
-    @adapters[adapter] ||= Class.new(Adapter, &)
+  def self.method_missing(name, &)
+    Class.new(Adapter, &).new(name).tap do |adapter|
+      define_singleton_method(name) do |&block|
+        adapter.class.class_eval(&block) if block
+        adapter
+      end
+    end
   end
 
   class Adapter

@@ -1,7 +1,7 @@
 require_relative "lib/process_sip"
 
 # lib/process_sip/executables/git.rb
-ProcessSip.adapter :git do
+git = ProcessSip.git do
   def commit_all(message)
     add "." and commit message
   end
@@ -9,13 +9,18 @@ ProcessSip.adapter :git do
   def commit(message)
     super :m, message
   end
+end
+p git
 
+git = ProcessSip.git do
   def with_work_tree
     @with_work_tree ||= with(work_tree: __dir__)
   end
 end
+p git
 
 git = ProcessSip.git
+p git
 define_method(:git) { git }
 
 binding.irb
