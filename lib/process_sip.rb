@@ -25,12 +25,11 @@ module ProcessSip
 
   class Adapter
     def initialize(name)
-      @name = name.dasherize
-      @context = Context.new self
+      @name, @context = name.dasherize, Context.new
     end
 
     def without(*, &) = with(**@context.without(*), &)
-    def with(...)     = clone.tap { _1.instance_variable_set :@context, Context.new(_1, ...) }
+    def with(...)     = clone.tap { _1.instance_variable_set :@context, Context.new(...) }
 
     def call(name, *arguments, **options, &block)
       resolved = [@name, *@context.arguments, name.to_s, *process_arguments(arguments), *process_options(options)]
@@ -62,15 +61,12 @@ module ProcessSip
   end
 
   class Context
-    attr_reader :arguments
-
-    def initialize(adapter, *keys, **options)
-      @adapter, @options = adapter, keys.index_with(nil).merge(options)
+    def initialize(*keys, **options)
+      @options = keys.index_with(nil).merge(options)
       @arguments = @options.map { [ "--#{_1.dasherize}", _2&.shellescape ].compact.join("=") }
     end
+    attr_reader :arguments
 
-    def without(*keys)
-      keys.none? ? {} : @options.except(*keys)
-    end
+    def without(...) = @options.except(...)
   end
 end
