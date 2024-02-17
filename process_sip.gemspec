@@ -11,9 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = "ProcessSip lets you wrap CLIs with as little DSL as needed"
   spec.homepage = "https://github.com/kaspth/process_sip"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.0.0"
-
-  spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
+  spec.required_ruby_version = ">= 3.3.0"
 
   spec.metadata["homepage_uri"]    = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
