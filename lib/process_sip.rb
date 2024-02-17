@@ -43,7 +43,7 @@ module ProcessSip
 
     private
       def process_arguments(arguments)
-        arguments.map { _1.is_a?(Symbol) ? "-#{_1}" : _1 }.map(&:dasherize)
+        arguments.map { _1.is_a?(Symbol) ? "-#{_1.dasherize}" : _1 }
       end
 
       def process_options(options)
