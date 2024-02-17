@@ -32,7 +32,7 @@ module ProcessSip
     def with(...)     = new_with_context(...)
     def without(*, &) = new_with_context(**@context.without(*), &)
 
-    def exec(command, *arguments, **options, &block)
+    def call(command, *arguments, **options, &block)
       system @name, *@context.arguments, command.to_s, *process_arguments(arguments), *process_options(options)
     end
 
@@ -40,7 +40,7 @@ module ProcessSip
       if arguments.empty?
         Command.new(self, command)
       else
-        exec(command, *arguments)
+        call(command, *arguments)
       end
     end
 
@@ -66,9 +66,8 @@ module ProcessSip
     def with(...)    = clone.tap { _1.adapter = adapter.with(...) }
     def without(...) = clone.tap { _1.adapter = adapter.without(...) }
 
-    def exec(...) = adapter.exec(@name, ...)
-
-    def method_missing(name, ...) = exec(name.to_s, ...)
+    def method_missing(name, ...) = call(name.to_s, ...)
+    def call(...) = adapter.call(@name, ...)
 
     protected attr_accessor :adapter
   end
