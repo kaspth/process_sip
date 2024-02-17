@@ -55,9 +55,6 @@ module ProcessSip
       @adapter, @name = adapter, name.dasherize
     end
 
-    def with(...)    = clone.tap { _1.instance_variable_set :@adapter, @adapter.with(...) }
-    def without(...) = clone.tap { _1.instance_variable_set :@adapter, @adapter.without(...) }
-
     def method_missing(name, ...) = call(name.to_s, ...)
     def call(...) = @adapter.call(@name, ...)
   end
