@@ -28,8 +28,8 @@ module ProcessSip
       @name, @context, @preprint = name.dasherize, Context.new, false
     end
 
-    def omit(*keys)     = clone.tap { _1.instance_variable_set :@context, @context.except(*keys) }
-    def with(**options) = clone.tap { _1.instance_variable_set :@context, @context.merge(**options) }
+    def omit(*keys)     = clone_with(context: @context.except(*keys))
+    def with(**options) = clone_with(context: @context.merge(**options))
 
     def call(name, *, **, &block)
       chain = [@name, @context.arguments, name.to_s.dasherize, process(*, **)].flatten.map(&:shellescape).join(" ")
@@ -48,8 +48,8 @@ module ProcessSip
       end
     end
 
-    def preprint = clone.tap { _1.instance_variable_set :@preprint, true }
-    def silent   = clone.tap { _1.instance_variable_set :@preprint, false }
+    def preprint = clone_with(preprint: true)
+    def silent   = clone_with(preprint: false)
 
     private
       def process(*arguments, **options)
