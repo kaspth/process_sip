@@ -32,11 +32,11 @@ module ProcessSip
     def with(**options) = clone.tap { _1.instance_variable_set :@context, @context.merge(**options) }
 
     def call(name, ...)
-      system *[@name, @context.arguments, name.to_s, process(...)].flatten.tap { output _1 }
+      system *[@name, @context.arguments, name.to_s.dasherize, process(...)].flatten.tap { output _1 }
     end
 
     ruby2_keywords def method_missing(name, *arguments)
-      arguments.empty? ? Subcommand.new(self, name.dasherize) : call(name, *arguments)
+      arguments.empty? ? Subcommand.new(self, name) : call(name, *arguments)
     end
 
     def preprint = clone.tap { _1.instance_variable_set :@preprint, true }
