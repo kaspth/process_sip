@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.authors = ["Kasper Timm Hansen"]
   spec.email = ["hey@kaspth.com"]
 
-  spec.summary = "ProcessSip lets you wrap CLIs with as little DSL as needed"
+  spec.summary  = "Make ad-hoc adapters for CLIs to interface with from Ruby."
   spec.homepage = "https://github.com/kaspth/process_sip"
-  spec.license = "MIT"
+  spec.license  = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
 
   spec.metadata["homepage_uri"]    = spec.homepage
