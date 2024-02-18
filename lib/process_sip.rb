@@ -31,15 +31,21 @@ module ProcessSip
     def omit(*keys)     = clone.tap { _1.instance_variable_set :@context, @context.except(*keys) }
     def with(**options) = clone.tap { _1.instance_variable_set :@context, @context.merge(**options) }
 
-    def call(name, ...)
-      chain = [@name, @context.arguments, name.to_s.dasherize, process(...)].flatten.map(&:shellescape).join(" ")
+    def call(name, *, **, &block)
+      chain = [@name, @context.arguments, name.to_s.dasherize, process(*, **)].flatten.map(&:shellescape).join(" ")
       puts chain if @preprint
 
-      IO.popen(chain, &:read).tap(&:chomp!)
+      IO.popen(chain, &block || -> { _1.read.chomp })
     end
 
-    ruby2_keywords def method_missing(name, *arguments)
-      arguments.empty? ? Subcommand.new(self, name) : call(name, *arguments)
+    ruby2_keywords def method_missing(name, *arguments, &block)
+      Subcommand.new(self, name).then do |apply|
+        if block_given? || arguments.any?
+          apply.call(*arguments, &block)
+        else
+          apply
+        end
+      end
     end
 
     def preprint = clone.tap { _1.instance_variable_set :@preprint, true }
@@ -56,8 +62,16 @@ module ProcessSip
   end
 
   class Subcommand < Data.define(:adapter, :name)
-    def method_missing(...) = call(...)
+    def match?(...) = call.match?(...)
+    def readlines(chomp: true) = call { _1.readlines(chomp:) }
+
+    def stream(*, **) = call(*, **) do |io|
+      while line = io.gets&.chomp; yield line; end
+    end
+
     def call(...) = adapter.call(name, ...)
+    alias method_missing call
+    alias read call
   end
 
   class Context
