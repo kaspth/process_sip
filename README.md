@@ -1,8 +1,61 @@
 # ProcessSip
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/process_sip`. To experiment with that code, run `bin/console` for an interactive prompt.
+ProcessSip lets you make ad-hoc adapters for CLIs to interface with from Ruby.
 
-TODO: Delete this and the text above, and describe your gem
+Here's wrapping `git`:
+
+```ruby
+git = ProcessSip.git # Connect an adapter to an executable, here `git`.
+
+# Any subcommands are automatically proxied, so:
+git.branch.call    # Calls `git branch` on the commandline.
+git.branch :remote # Automatically calls when passed arguments, `git branch --remote`.
+git.branch :r # `git branch -r`. 1-count symbols get prefixed with -, while anything else gets --.
+
+git.branch :show_current # Get the current branch: `git branch --show-current`.
+
+git.diff.call # `git diff`
+git.status :name_only # `git diff --name-only`
+```
+
+And here's `bundle`:
+
+```ruby
+# Run `bundle install` and stream each line into the block:
+ProcessSip.bundle.install.stream do |line|
+  puts line
+end
+
+ProcessSip.bundle.update.call          # `bundle update`
+ProcessSip.bundle.update :only_bundler # `bundle update --only-bundler`
+
+ProcessSip.gem.update :system # `gem update --system`
+```
+
+The real power of ProcessSip is to extend the default proxying with your ad-hoc needs. So you can extend the `git` adapter like this:
+
+```ruby
+# Open an adapter for a specific executable, here `git`.
+ProcessSip.git do
+  def commit_all(message)
+    add "." and commit message
+  end
+
+  def commit(message)
+    super :m, message
+  end
+
+  def with_work_tree = with(work_tree: __dir__)
+  def with_git_dir   = with(git_dir: __dir__ + "/.git")
+end
+
+git = ProcessSip.git.with_work_tree.with_git_dir
+
+# Now every git command will use the --work-tree and --git-dir context arguments
+git.branch.call # `git --work-tree= --git-dir branch`
+
+deleted_lines = git.diff.select { _1.start_with?("- ") } # `git --work-tree= --git-dir diff`
+```
 
 ## Installation
 
@@ -13,10 +66,6 @@ Install the gem and add to the application's Gemfile by executing:
 If bundler is not being used to manage dependencies, install the gem by executing:
 
     $ gem install process_sip
-
-## Usage
-
-TODO: Write usage instructions here
 
 ## Development
 
