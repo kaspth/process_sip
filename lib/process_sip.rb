@@ -65,8 +65,12 @@ module ProcessSip
     def match?(...) = call.match?(...)
     def readlines(chomp: true) = call { _1.readlines(chomp:) }
 
-    def stream(*, **) = call(*, **) do |io|
-      while line = io.gets&.chomp; yield line; end
+    def stream(*, **)
+      return enum_for(:stream, *, **) unless block_given?
+
+      call(*, **) do |io|
+        while line = io.gets&.chomp; yield line; end
+      end
     end
 
     def call(...) = adapter.call(name, ...)
