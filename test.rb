@@ -18,7 +18,7 @@ git = ProcessSip.git do
 end
 p git
 
-git = ProcessSip.git
+git = ProcessSip.git.preprint
 p git
 define_method(:git) { git }
 
@@ -26,6 +26,7 @@ binding.irb
 
 # git.with_work_tree.with(git_dir: __dir__ + "/.git").omit(:git_dir, :work_tree)
 # git.with_work_tree.with_git_dir.omit(:git_dir, :work_tree)
+# git.with_work_tree.silent.preprint.branch :d, "branch"
 
 # def git.commit(message) = super(:m, message)
 #

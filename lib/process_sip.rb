@@ -25,21 +25,22 @@ module ProcessSip
 
   class Adapter
     def initialize(name)
-      @name, @context = name.dasherize, Context.new
+      @name, @context, @preprint = name.dasherize, Context.new, false
     end
 
     def omit(*keys)     = clone.tap { _1.instance_variable_set :@context, @context.except(*keys) }
     def with(**options) = clone.tap { _1.instance_variable_set :@context, @context.merge(**options) }
 
     def call(name, ...)
-      resolved = [@name, @context.arguments, name.to_s, process(...)].flatten
-      puts resolved.join(" ")
-      system *resolved
+      system *[@name, @context.arguments, name.to_s, process(...)].flatten.tap { output _1 }
     end
 
     ruby2_keywords def method_missing(name, *arguments)
       arguments.empty? ? Subcommand.new(self, name.dasherize) : call(name, *arguments)
     end
+
+    def preprint = clone.tap { _1.instance_variable_set :@preprint, true }
+    def silent   = clone.tap { _1.instance_variable_set :@preprint, false }
 
     private
       def process(*arguments, **options)
@@ -48,6 +49,10 @@ module ProcessSip
 
       def option_name(name)
         name.is_a?(Symbol) ? "#{name.size > 1 ? "--" : "-"}#{name.dasherize}" : name
+      end
+
+      def output(chain)
+        puts chain.join(" ") if @preprint
       end
   end
 
