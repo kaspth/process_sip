@@ -33,7 +33,7 @@ module ProcessSip
 
     def call(name, ...)
       resolved = [@name, @context.arguments, name.to_s, process(...)].flatten
-      puts Shellwords.escape(resolved.join(" "))
+      puts resolved.join(" ")
       system *resolved
     end
 
