@@ -62,6 +62,11 @@ module ProcessSip
   end
 
   class Subcommand < Data.define(:adapter, :name)
+    include Enumerable
+
+    def each(&) = stream(&)
+    alias each_line each
+
     def match?(...) = call.match?(...)
     def readlines(chomp: true) = call { _1.readlines(chomp:) }
 
