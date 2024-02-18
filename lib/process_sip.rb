@@ -31,8 +31,8 @@ module ProcessSip
     def omit(*keys)     = clone.tap { _1.instance_variable_set :@context, @context.except(*keys) }
     def with(**options) = clone.tap { _1.instance_variable_set :@context, @context.merge(**options) }
 
-    def call(name, *arguments, **options, &block)
-      resolved = [@name, *@context.arguments, name.to_s, *process_arguments(arguments), *process_options(options)]
+    def call(name, ...)
+      resolved = [@name, @context.arguments, name.to_s, process(...)].flatten
       puts Shellwords.escape(resolved.join(" "))
       system *resolved
     end
@@ -42,12 +42,12 @@ module ProcessSip
     end
 
     private
-      def process_arguments(arguments)
-        arguments.map { _1.is_a?(Symbol) ? "-#{_1.dasherize}" : _1 }
+      def process(*arguments, **options)
+        arguments.map { option_name _1 } + options.transform_keys { option_name _1 }.flatten
       end
 
-      def process_options(options)
-        options.flat_map { [ "-#{_1.dasherize}", _2 ] }
+      def option_name(name)
+        name.is_a?(Symbol) ? "#{"-" if name.size > 1}-#{name.dasherize}" : name
       end
   end
 
