@@ -32,7 +32,10 @@ module ProcessSip
     def with(**options) = clone.tap { _1.instance_variable_set :@context, @context.merge(**options) }
 
     def call(name, ...)
-      system *[@name, @context.arguments, name.to_s.dasherize, process(...)].flatten.tap { output _1 }
+      chain = [@name, @context.arguments, name.to_s.dasherize, process(...)].flatten.map(&:shellescape).join(" ")
+      puts chain if @preprint
+
+      IO.popen(chain, &:read).tap(&:chomp!)
     end
 
     ruby2_keywords def method_missing(name, *arguments)
@@ -49,10 +52,6 @@ module ProcessSip
 
       def option_name(name)
         name.is_a?(Symbol) ? "#{name.size > 1 ? "--" : "-"}#{name.dasherize}" : name
-      end
-
-      def output(chain)
-        puts chain.join(" ") if @preprint
       end
   end
 
