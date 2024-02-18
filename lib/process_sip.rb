@@ -47,7 +47,7 @@ module ProcessSip
       end
 
       def option_name(name)
-        name.is_a?(Symbol) ? "#{"-" if name.size > 1}-#{name.dasherize}" : name
+        name.is_a?(Symbol) ? "#{name.size > 1 ? "--" : "-"}#{name.dasherize}" : name
       end
   end
 
